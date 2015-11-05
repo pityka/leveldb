@@ -22,11 +22,14 @@ import org.iq80.leveldb.util.AbstractSeekingIterator;
 import org.iq80.leveldb.util.DbIterator;
 import org.iq80.leveldb.util.Slice;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
 public final class SnapshotSeekingIterator
         extends AbstractSeekingIterator<Slice, Slice>
+        implements Closeable
 {
     private final DbIterator iterator;
     private final SnapshotImpl snapshot;
@@ -40,9 +43,12 @@ public final class SnapshotSeekingIterator
         this.snapshot.getVersion().retain();
     }
 
+    @Override
     public void close()
+            throws IOException
     {
         this.snapshot.getVersion().release();
+        this.iterator.close();
     }
 
     @Override

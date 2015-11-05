@@ -21,20 +21,33 @@ import org.iq80.leveldb.table.Block;
 import org.iq80.leveldb.table.BlockIterator;
 import org.iq80.leveldb.table.Table;
 
+import java.io.Closeable;
 import java.util.Map.Entry;
 
 public final class TableIterator
         extends AbstractSeekingIterator<Slice, Slice>
+        implements Closeable
 {
     private final Table table;
     private final BlockIterator blockIterator;
     private BlockIterator current;
+    private boolean closed;
 
     public TableIterator(Table table, BlockIterator blockIterator)
     {
         this.table = table;
+        this.closed = false;
         this.blockIterator = blockIterator;
         current = null;
+    }
+
+    @Override
+    public void close()
+    {
+        if (!closed) {
+            closed = true;
+            table.close();
+        }
     }
 
     @Override

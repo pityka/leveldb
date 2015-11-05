@@ -1007,7 +1007,7 @@ public class DbImpl
             FileMetaData fileMetaData = new FileMetaData(fileNumber, file.length(), smallest, largest);
 
             // verify table can be opened
-            tableCache.newIterator(fileMetaData);
+            tableCache.newIterator(fileMetaData).close();
 
             pendingOutputs.remove(fileNumber);
 
@@ -1034,8 +1034,7 @@ public class DbImpl
         // Release mutex while we're actually doing the compaction work
         mutex.unlock();
         try {
-            MergingIterator iterator = versions.makeInputIterator(compactionState.compaction);
-
+            try (MergingIterator iterator = versions.makeInputIterator(compactionState.compaction)) {
             Slice currentUserKey = null;
             boolean hasCurrentUserKey = false;
 
@@ -1119,6 +1118,7 @@ public class DbImpl
                 finishCompactionOutputFile(compactionState);
             }
         }
+    }
         finally {
             mutex.lock();
         }
@@ -1183,7 +1183,7 @@ public class DbImpl
 
         if (currentEntries > 0) {
             // Verify that the table is usable
-            tableCache.newIterator(outputNumber);
+            tableCache.newIterator(outputNumber).close();
         }
     }
 

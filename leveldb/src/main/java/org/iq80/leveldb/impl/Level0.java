@@ -97,8 +97,7 @@ public class Level0
         readStats.clear();
         for (FileMetaData fileMetaData : fileMetaDataList) {
             // open the iterator
-            InternalTableIterator iterator = tableCache.newIterator(fileMetaData);
-
+            try (InternalTableIterator iterator = tableCache.newIterator(fileMetaData)) {
             // seek to the key
             iterator.seek(key.getInternalKey());
 
@@ -124,6 +123,7 @@ public class Level0
                 readStats.setSeekFile(fileMetaData);
                 readStats.setSeekFileLevel(0);
             }
+        }
         }
 
         return null;

@@ -127,8 +127,7 @@ public class Level
             lastFileReadLevel = levelNumber;
 
             // open the iterator
-            InternalTableIterator iterator = tableCache.newIterator(fileMetaData);
-
+            try (InternalTableIterator iterator = tableCache.newIterator(fileMetaData)) {
             // seek to the key
             iterator.seek(key.getInternalKey());
 
@@ -148,6 +147,7 @@ public class Level
                     }
                 }
             }
+        }
         }
 
         return null;

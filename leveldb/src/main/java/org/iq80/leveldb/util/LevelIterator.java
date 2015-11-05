@@ -42,11 +42,25 @@ public final class LevelIterator
         this.comparator = comparator;
     }
 
+      @Override
+    public void close()
+    {
+        closeCurrent();
+    }
+
+    private void closeCurrent()
+    {
+        if (current != null) {
+            current.close();
+        }
+    }
+
     @Override
     protected void seekToFirstInternal()
     {
         // reset index to before first and clear the data iterator
         index = 0;
+        closeCurrent();
         current = null;
     }
 
@@ -88,10 +102,12 @@ public final class LevelIterator
         // if indexIterator does not have a next, it mean the key does not exist in this iterator
         if (index < files.size()) {
             // seek the current iterator to the key
+            closeCurrent();
             current = openNextFile();
             current.seek(targetKey);
         }
         else {
+            closeCurrent();
             current = null;
         }
     }
@@ -110,6 +126,7 @@ public final class LevelIterator
             }
             if (!(currentHasNext)) {
                 if (index < files.size()) {
+                    closeCurrent();
                     current = openNextFile();
                 }
                 else {
@@ -125,6 +142,7 @@ public final class LevelIterator
         }
         else {
             // set current to empty iterator to avoid extra calls to user iterators
+            closeCurrent();
             current = null;
             return null;
         }

@@ -34,6 +34,12 @@ public class InternalTableIterator
     }
 
     @Override
+    public void close()
+    {
+        tableIterator.close();
+    }
+
+    @Override
     protected void seekToFirstInternal()
     {
         tableIterator.seekToFirst();

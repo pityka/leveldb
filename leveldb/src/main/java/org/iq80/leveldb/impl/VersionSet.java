@@ -55,7 +55,6 @@ import static org.iq80.leveldb.impl.DbConstants.NUM_LEVELS;
 import static org.iq80.leveldb.impl.LogMonitors.throwExceptionMonitor;
 
 public class VersionSet
-        implements SeekingIterable<InternalKey, Slice>
 {
     private static final int L0_COMPACTION_TRIGGER = 4;
 
@@ -188,12 +187,6 @@ public class VersionSet
     public long getPrevLogNumber()
     {
         return prevLogNumber;
-    }
-
-    @Override
-    public MergingIterator iterator()
-    {
-        return current.iterator();
     }
 
     public MergingIterator makeInputIterator(Compaction c)

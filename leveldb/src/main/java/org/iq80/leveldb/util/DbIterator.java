@@ -22,7 +22,7 @@ import com.google.common.primitives.Ints;
 import org.iq80.leveldb.impl.InternalKey;
 import org.iq80.leveldb.impl.MemTable.MemTableIterator;
 import org.iq80.leveldb.impl.SeekingIterator;
-
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +73,20 @@ public final class DbIterator
 
         this.heap = new ComparableIterator[3 + level0Files.size() + levels.size()];
         resetPriorityQueue();
+    }
+
+    @Override
+    public void close()
+            throws IOException
+    {
+        memTableIterator.close();
+        immutableMemTableIterator.close();
+        for (InternalTableIterator level0File : level0Files) {
+            level0File.close();
+        }
+        for (LevelIterator level : levels) {
+            level.close();
+        }
     }
 
     @Override
